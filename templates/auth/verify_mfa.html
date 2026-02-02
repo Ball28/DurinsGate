@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Verify MFA - DurinsGate Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-body p-5 text-center">
+                <i class="bi bi-phone text-primary mb-3" style="font-size: 3rem;"></i>
+                <h2 class="card-title mb-4">Two-Factor Authentication</h2>
+
+                <p class="text-muted mb-4">
+                    Please enter the verification code from your authenticator app.
+                </p>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-4 text-start">
+                        {{ form.code.label(class="form-label") }}
+                        {{ form.code(class="form-control form-control-lg text-center letter-spacing-2" + (" is-invalid"
+                        if form.code.errors else ""), placeholder="000000", maxlength="6", autocomplete="off") }}
+                        {% if form.code.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.code.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+
+                <div class="mt-4">
+                    <a href="{{ url_for('auth.logout') }}" class="text-decoration-none text-muted">
+                        <i class="bi bi-arrow-left"></i> Back to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .letter-spacing-2 {
+        letter-spacing: 0.5em;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Edit File - DurinsGate Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Edit File Metadata</h1>
+            <a href="{{ url_for('admin.files') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Files
+            </a>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label">Create Customer</label>
+                        <input type="text" class="form-control" value="{{ file.original_filename }}" disabled readonly>
+                        <div class="form-text">To update the actual file content, please delete and re-upload.</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.category.label(class="form-label") }}
+                            {{ form.category(class="form-control" + (" is-invalid" if form.category.errors else ""),
+                            list="categories") }}
+                            <datalist id="categories">
+                                <option value="User Manual">
+                                <option value="Technical Specification">
+                                <option value="Safety Documentation">
+                                <option value="CAD Drawings">
+                                <option value="Warranty Information">
+                            </datalist>
+                            {% if form.category.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.category.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.product_type.label(class="form-label") }}
+                            {{ form.product_type(class="form-control" + (" is-invalid" if form.product_type.errors else
+                            "")) }}
+                            {% if form.product_type.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.product_type.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.version.label(class="form-label") }}
+                        {{ form.version(class="form-control" + (" is-invalid" if form.version.errors else "")) }}
+                        {% if form.version.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.version.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""),
+                        rows=3) }}
+                        {% if form.description.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.description.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('admin.files') }}" class="btn btn-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - DurinsGate Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1 class="mb-4"><i class="bi bi-person-circle"></i> My Profile</h1>
+
+        <div class="card shadow mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Account Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-control" value="{{ current_user.company_name }}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                        {% if form.email.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.contact_info.label(class="form-label") }}
+                        {{ form.contact_info(class="form-control" + (" is-invalid" if form.contact_info.errors else ""),
+                        rows=3) }}
+                        {% if form.contact_info.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.contact_info.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Security Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h6 class="mb-1">Two-Factor Authentication (MFA)</h6>
+                        <p class="text-muted small mb-0">Adds an extra layer of security to your account.</p>
+                    </div>
+                    <div>
+                        {% if current_user.mfa_enabled %}
+                        <span class="badge bg-success mb-2 d-block">Enabled</span>
+                        <a href="{{ url_for('auth.disable_mfa') }}"
+                            class="btn btn-sm btn-outline-danger w-100">Disable</a>
+                        {% else %}
+                        <span class="badge bg-secondary mb-2 d-block">Disabled</span>
+                        <a href="{{ url_for('auth.setup_mfa') }}"
+                            class="btn btn-sm btn-outline-primary w-100">Enable</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">Password</h6>
+                        <p class="text-muted small mb-0">Change your account password.</p>
+                    </div>
+                    <a href="{{ url_for('auth.forgot_password') }}" class="btn btn-sm btn-outline-secondary">Change
+                        Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

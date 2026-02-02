@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - DurinsGate Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-speedometer2"></i> Admin Dashboard
+        </h1>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Total Customers</h6>
+                        <h2 class="card-title mb-0">{{ total_customers }}</h2>
+                        <small>{{ active_customers }} active</small>
+                    </div>
+                    <i class="bi bi-people" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Total Files</h6>
+                        <h2 class="card-title mb-0">{{ total_files }}</h2>
+                    </div>
+                    <i class="bi bi-file-earmark" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Total Downloads</h6>
+                        <h2 class="card-title mb-0">{{ total_downloads }}</h2>
+                    </div>
+                    <i class="bi bi-download" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Quick Actions</h6>
+                        <a href="{{ url_for('admin.create_customer') }}" class="btn btn-sm btn-dark mt-2">
+                            <i class="bi bi-plus"></i> Add Customer
+                        </a>
+                    </div>
+                    <i class="bi bi-lightning" style="font-size: 3rem; opacity: 0.5;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-download"></i> Recent Downloads</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_downloads %}
+                <div class="list-group list-group-flush">
+                    {% for download in recent_downloads %}
+                    <div class="list-group-item px-0">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ download.file.original_filename }}</h6>
+                                <small class="text-muted">
+                                    by {{ download.user.username }} ({{ download.user.company_name }})
+                                </small><br>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> {{ download.download_date.strftime('%Y-%m-%d %H:%M')
+                                    }}
+                                </small>
+                            </div>
+                            <span class="badge bg-success">Success</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">No recent downloads</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-shield-check"></i> Recent Login Attempts</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_logins %}
+                <div class="list-group list-group-flush">
+                    {% for login in recent_logins %}
+                    <div class="list-group-item px-0">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ login.username }}</h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-geo-alt"></i> {{ login.ip_address }}
+                                </small><br>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> {{ login.timestamp.strftime('%Y-%m-%d %H:%M') }}
+                                </small>
+                            </div>
+                            <span class="badge bg-{{ 'success' if login.success else 'danger' }}">
+                                {{ 'Success' if login.success else 'Failed' }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">No recent login attempts</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Downloaded Files -->
+{% if top_files %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Top Downloaded Files</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Category</th>
+                                <th>Downloads</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file, count in top_files %}
+                            <tr>
+                                <td>{{ file.original_filename }}</td>
+                                <td><span class="badge bg-secondary">{{ file.category }}</span></td>
+                                <td><strong>{{ count }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

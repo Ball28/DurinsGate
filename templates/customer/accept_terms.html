@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service - DurinsGate Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-white">
+                <h3 class="mb-0">Terms of Service</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="terms-content mb-4 border rounded p-3"
+                    style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+                    <h5>1. Acceptance of Terms</h5>
+                    <p>By accessing and using the DurinsGate Customer Portal, you agree to comply with and be bound by
+                        these
+                        Terms of Service. If you do not agree to these terms, please do not use the Portal.</p>
+
+                    <h5>2. Confidentiality</h5>
+                    <p>All documents, manuals, and files provided through this Portal are confidential and proprietary
+                        to DurinsGate. You agree not to distribute, share, or disclose these materials to any third
+                        party
+                        without explicit written consent from DurinsGate.</p>
+
+                    <h5>3. Account Security</h5>
+                    <p>You are responsible for maintaining the confidentiality of your account credentials. You agree to
+                        notify DurinsGate immediately of any unauthorized use of your account.</p>
+
+                    <h5>4. Usage Restrictions</h5>
+                    <p>You may only download and use the provided files for the purpose of maintaining or operating
+                        DurinsGate
+                        equipment owned by your organization. Reverse engineering or modification of provided files is
+                        strictly prohibited.</p>
+
+                    <h5>5. Termination</h5>
+                    <p>DurinsGate reserves the right to terminate or suspend your access to the Portal at any time for
+                        violation of these terms.</p>
+
+                    <h5>6. Disclaimer</h5>
+                    <p>All materials are provided "as is" without warranty of any kind. DurinsGate is not liable for any
+                        damages arising from the use of these materials.</p>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-4 form-check bg-light p-3 border rounded">
+                        {{ form.accept(class="form-check-input") }}
+                        <label class="form-check-label fw-bold" for="accept">
+                            I have read and agree to the Terms of Service and Confidentiality Agreement.
+                        </label>
+                        {% if form.accept.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.accept.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger">Decline & Logout</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

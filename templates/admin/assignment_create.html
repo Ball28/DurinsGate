@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Assign File - DurinsGate Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Assign File</h1>
+            <a href="{{ url_for('admin.assignments') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.user_id.label(class="form-label") }}
+                        {{ form.user_id(class="form-select" + (" is-invalid" if form.user_id.errors else "")) }}
+                        {% if form.user_id.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.user_id.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Select the customer to grant access to.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.file_id.label(class="form-label") }}
+                        {{ form.file_id(class="form-select" + (" is-invalid" if form.file_id.errors else "")) }}
+                        {% if form.file_id.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.file_id.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Select the file to assign.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.expiration_date.label(class="form-label") }}
+                        {{ form.expiration_date(class="form-control" + (" is-invalid" if form.expiration_date.errors
+                        else ""), type="date") }}
+                        {% if form.expiration_date.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.expiration_date.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Optional: Date when access will automatically expire.</div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('admin.assignments') }}" class="btn btn-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

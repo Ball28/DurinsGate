@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - DurinsGate Portal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center text-center">
+    <div class="col-md-6">
+        <h1 class="display-1 text-danger">500</h1>
+        <h2 class="mb-4">Internal Server Error</h2>
+        <p class="lead mb-4">
+            Something went wrong on our end. Please try again later.
+        </p>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+            Return to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

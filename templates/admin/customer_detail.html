@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Details - DurinsGate Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-person"></i> Customer Details</h1>
+    <div>
+        <a href="{{ url_for('admin.customers') }}" class="btn btn-outline-secondary me-2">Back to List</a>
+        <a href="{{ url_for('admin.edit_customer', customer_id=customer.id) }}" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Edit Profile
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Customer Info -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Profile Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="bg-light rounded-circle d-inline-flex p-4 text-primary mb-3">
+                        <i class="bi bi-building display-4"></i>
+                    </div>
+                    <h4>{{ customer.company_name }}</h4>
+                    <span class="badge bg-{{ 'success' if customer.is_active else 'danger' }}">
+                        {{ 'Active' if customer.is_active else 'Inactive' }}
+                    </span>
+                    {% if customer.is_locked %}
+                    <span class="badge bg-warning text-dark">Locked</span>
+                    {% endif %}
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <label class="small text-muted fw-bold">USERNAME</label>
+                    <p>{{ customer.username }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted fw-bold">EMAIL</label>
+                    <p><a href="mailto:{{ customer.email }}">{{ customer.email }}</a></p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted fw-bold">CONTACT INFO</label>
+                    <p class="text-break" style="white-space: pre-line;">{{ customer.contact_info or 'N/A' }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted fw-bold">MFA STATUS</label>
+                    <p>
+                        {% if customer.mfa_enabled %}
+                        <span class="text-success"><i class="bi bi-check-circle"></i> Enabled</span>
+                        {% else %}
+                        <span class="text-muted"><i class="bi bi-dash-circle"></i> Disabled</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted fw-bold">LAST LOGIN</label>
+                    <p>{{ customer.last_login.strftime('%Y-%m-%d %H:%M') if customer.last_login else 'Never' }}</p>
+                </div>
+
+                <hr>
+
+                <div class="d-grid mt-3">
+                    <form action="{{ url_for('admin.toggle_customer_active', customer_id=customer.id) }}" method="POST">
+                        <button type="submit"
+                            class="btn btn-outline-{{ 'danger' if customer.is_active else 'success' }} w-100">
+                            {% if customer.is_active %}
+                            <i class="bi bi-slash-circle"></i> Deactivate Account
+                            {% else %}
+                            <i class="bi bi-check-circle"></i> Activate Account
+                            {% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-md-8">
+        <!-- Assigned Files -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Assigned Files</h5>
+                <a href="{{ url_for('admin.assignments') }}" class="btn btn-sm btn-outline-primary">Manage</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Category</th>
+                                <th>Assigned</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file, assignment in assigned_files %}
+                            <tr>
+                                <td>{{ file.original_filename }}</td>
+                                <td><span class="badge bg-secondary">{{ file.category }}</span></td>
+                                <td>{{ assignment.assigned_date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    {% if assignment.is_expired() %}
+                                    <span class="badge bg-danger">Expired</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    No files assigned to this customer.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card shadow">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs mb-3" id="activityTab" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" id="downloads-tab" data-bs-toggle="tab"
+                            data-bs-target="#downloads" type="button">Downloads</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" id="logins-tab" data-bs-toggle="tab" data-bs-target="#logins"
+                            type="button">Login History</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="activityTabContent">
+                    <div class="tab-pane fade show active" id="downloads">
+                        {% if downloads %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>File</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in downloads %}
+                                    <tr>
+                                        <td>{{ log.download_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>{{ log.file.original_filename }}</td>
+                                        <td>
+                                            {% if log.success %}
+                                            <span class="text-success">Success</span>
+                                            {% else %}
+                                            <span class="text-danger">Failed</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center py-3">No download history.</p>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="logins">
+                        {% if logins %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>IP Address</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in logins %}
+                                    <tr>
+                                        <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td class="font-monospace">{{ log.ip_address }}</td>
+                                        <td>
+                                            {% if log.success %}
+                                            <span class="text-success">Success</span>
+                                            {% else %}
+                                            <span class="text-danger">Failed</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <p class="text-muted text-center py-3">No login history.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

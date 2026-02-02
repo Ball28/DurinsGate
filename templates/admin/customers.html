@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Customers - DurinsGate Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-people"></i> Customers</h1>
+    <a href="{{ url_for('admin.create_customer') }}" class="btn btn-primary">
+        <i class="bi bi-person-plus"></i> New Customer
+    </a>
+</div>
+
+<!-- Search Filter -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('admin.customers') }}" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" name="search" class="form-control"
+                    placeholder="Search by username, email, or company..." value="{{ search }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-secondary w-100">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Company / User</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers.items %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle p-2 me-3 text-primary">
+                                    <i class="bi bi-building"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">{{ customer.company_name }}</div>
+                                    <small class="text-muted">{{ customer.username }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ customer.email }}</td>
+                        <td>
+                            {% if customer.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+
+                            {% if customer.is_locked %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-lock-fill"></i> Locked</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ customer.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('admin.customer_detail', customer_id=customer.id) }}"
+                                    class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ url_for('admin.edit_customer', customer_id=customer.id) }}"
+                                    class="btn btn-sm btn-outline-secondary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="bi bi-people display-4"></i>
+                            <p class="mt-3">No customers found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if customers.pages > 1 %}
+    <div class="card-footer bg-white d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination mb-0">
+                {% if customers.has_prev %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="{{ url_for('admin.customers', page=customers.prev_num, search=search) }}">Previous</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                {% endif %}
+
+                {% for page in customers.iter_pages() %}
+                {% if page %}
+                {% if page != customers.page %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin.customers', page=page, search=search) }}">{{ page
+                        }}</a>
+                </li>
+                {% else %}
+                <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+                {% endif %}
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                {% endfor %}
+
+                {% if customers.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="{{ url_for('admin.customers', page=customers.next_num, search=search) }}">Next</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
