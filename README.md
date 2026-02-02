@@ -2,6 +2,8 @@
 
 A professional, secure web portal enabling DurinsGate customers to authenticate and download manuals/files with comprehensive admin controls and enterprise-grade security features.
 
+Please note, this is a working proof of concept and should not be used on a production level in this current state. 
+
 ## 🎯 Features
 
 ### Customer Features
@@ -400,12 +402,6 @@ While this is primarily a web application, key endpoints:
 - `POST /admin/files/upload` - Upload file
 - `POST /admin/assignments/create` - Assign file
 
-## 🤝 Support
-
-For issues or questions:
-- **Email:** support@durinsgate.com
-- **Documentation:** This README
-- **Logs:** Check `app.log` for errors
 
 ## 📝 License
 
